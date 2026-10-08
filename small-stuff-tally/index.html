@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Small Stuff Tally</title>
+<meta name="description" content="Paycheck Smarter: one weekly ceiling for the under ten pound buys, counted in tally marks. Tap, see what is left, stop guessing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#17120B;--surface:#241B10;--paper:#F3E9D2;--ink:#17120B;--gold:#C9A227;--gold2:#8A6D1F;--mute:#B9A98A;--line:rgba(243,233,210,.14)}
+*{box-sizing:border-box;margin:0;padding:0;min-width:0}
+input,select,button{min-width:0;max-width:100%}
+html,body{background:var(--bg);color:var(--paper);font-family:Lora,Georgia,serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;background-image:linear-gradient(rgba(243,233,210,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(243,233,210,.04) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:560px;margin:0 auto;padding:22px 16px 60px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.mono{width:34px;height:34px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:"Playfair Display",serif;color:var(--gold);font-size:14px;flex:none}
+.kicker{font-family:Poppins,sans-serif;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:"Playfair Display",serif;font-weight:400;font-size:28px;line-height:1.15;margin:4px 0 6px}
+.sub{color:var(--mute);font-style:italic;font-size:15px;line-height:1.5}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.card h2{font-family:Poppins,sans-serif;font-weight:600;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;justify-content:space-between}
+.card h2 small{font-weight:400;letter-spacing:0;text-transform:none;color:var(--mute);font-family:Lora,serif;font-style:italic;font-size:12px}
+label{display:block;font-family:Poppins,sans-serif;font-size:12px;color:var(--mute);margin:8px 0 5px}
+input{width:100%;background:#1D160D;border:1px solid var(--line);border-radius:10px;color:var(--paper);font:500 18px Poppins,sans-serif;padding:12px;outline:none;-moz-appearance:textfield}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
+input:focus{border-color:var(--gold)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.paper{margin-top:16px;border-radius:16px;padding:20px 18px 16px;background:var(--paper);color:var(--ink);position:relative;overflow:hidden}
+.paper::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(23,18,11,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(23,18,11,.07) 1px,transparent 1px);background-size:18px 18px;pointer-events:none}
+.paper>*{position:relative}
+.paper .kicker{color:var(--gold2)}
+.left{font-family:"Playfair Display",serif;font-size:54px;line-height:1;margin:4px 0 2px}
+.left small{font-size:22px;vertical-align:top}
+.of{font:400 13px Poppins,sans-serif;color:#5E4F3A}
+.bar{height:10px;border-radius:999px;background:rgba(23,18,11,.12);margin:12px 0 4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold2);width:0;transition:width .3s}
+.bar.over i{background:#A33A2A}
+.tally{min-height:92px;margin-top:10px;padding:10px 8px;border-top:1px solid rgba(23,18,11,.18);border-bottom:1px solid rgba(23,18,11,.18);display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center}
+.group{display:inline-flex;gap:3px;position:relative;height:38px;align-items:center}
+.group b{display:block;width:3px;height:34px;background:var(--ink);border-radius:2px;transform:rotate(var(--r,0deg))}
+.group.full::after{content:"";position:absolute;left:-6px;right:-6px;top:50%;height:3px;background:var(--ink);transform:rotate(-24deg);border-radius:2px}
+.empty{font-style:italic;color:#7A6A52;font-size:14px}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.chip{border:1px solid var(--gold2);background:transparent;color:var(--ink);border-radius:10px;padding:12px 4px;font:600 15px Poppins,sans-serif;cursor:pointer}
+.chip.cust{grid-column:span 2;display:flex;gap:6px;padding:6px}
+.chip.cust input{background:#fff;border:1px solid rgba(138,109,31,.4);color:var(--ink);font-size:15px;padding:8px;border-radius:8px;flex:1}
+.chip.cust button{border:none;background:var(--gold2);color:#fff;border-radius:8px;padding:0 12px;font:600 13px Poppins,sans-serif;cursor:pointer}
+.log{margin-top:12px;font-size:13px;color:#3B3127;max-height:140px;overflow:auto}
+.log div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed rgba(23,18,11,.15)}
+.log button{border:none;background:none;color:#A33A2A;cursor:pointer;font-size:14px}
+.msg{margin-top:12px;font-size:14px;line-height:1.5;color:#3B3127;border-left:2px solid var(--gold);padding-left:10px;font-style:italic}
+.actions{display:flex;gap:8px;margin-top:14px}
+.btn{flex:1;border-radius:10px;padding:12px;font:600 13px Poppins,sans-serif;letter-spacing:.06em;cursor:pointer;border:1px solid var(--gold2);background:transparent;color:var(--gold2)}
+.btn.solid{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+footer{margin-top:26px;text-align:center;color:var(--mute);font-size:12px;line-height:1.6}
+footer a{color:var(--gold);text-decoration:none;font-family:Poppins,sans-serif;font-weight:500}
+.motto{font-family:"Playfair Display",serif;font-style:italic;color:var(--paper);font-size:15px;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mono">PS</div>
+    <div><div class="kicker">Paycheck Smarter · free tool</div><h1>Small Stuff Tally</h1></div>
+  </header>
+  <p class="sub">Your biggest expense last month probably cost under ten. Not one item, forty of them. Give the small stuff one ceiling and count it in tally marks, like a page in a notebook.</p>
+
+  <section class="card">
+    <h2>Settings <small>set once, then just tap</small></h2>
+    <div class="row">
+      <div><label for="cap">Weekly ceiling</label><input id="cap" type="number" inputmode="decimal" placeholder="40"></div>
+      <div><label for="start">Week starts on</label><input id="start" type="date"></div>
+    </div>
+  </section>
+
+  <section class="paper">
+    <div class="kicker">Left this week</div>
+    <div class="left"><small id="cur">£</small><span id="left">0</span></div>
+    <div class="of" id="of">of £0 · 0 buys</div>
+    <div class="bar" id="bar"><i></i></div>
+    <div class="tally" id="tally"><span class="empty">No marks yet. Every small buy is one mark.</span></div>
+    <div class="pad">
+      <button class="chip" data-v="3">+3</button><button class="chip" data-v="5">+5</button><button class="chip" data-v="8">+8</button><button class="chip" data-v="10">+10</button>
+      <div class="chip cust"><input id="cv" type="number" inputmode="decimal" placeholder="other amount"><button id="cadd">add</button></div>
+      <button class="chip" id="undo" style="grid-column:span 2">undo last</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <div class="log" id="log"></div>
+    <div class="actions"><button class="btn solid" id="newweek">New week</button><button class="btn" id="share">Copy summary</button></div>
+  </section>
+
+  <footer>
+    <div class="motto">Not perfect. Just named.</div>
+    The ceiling is the trick, not the cutting. The full system, with the small stuff line already built into the weekly page, is at <a href="https://whop.com/paycheck-smarter">whop.com/paycheck-smarter</a>
+  </footer>
+</div>
+<script>
+(function(){
+  const KEY='ps_tally_v1', $=s=>document.querySelector(s);
+  const monday=()=>{const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)};
+  let st=load()||{cap:'',start:monday(),cur:'£',log:[]};
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+  function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-GB',{maximumFractionDigits:2})}
+  function render(){
+    const cap=parseFloat(st.cap)||0; const spent=st.log.reduce((t,e)=>t+e.v,0); const left=cap-spent; const n=st.log.length;
+    $('#cur').textContent=st.cur; $('#left').textContent=(left<0?'−':'')+fmt(Math.abs(left)); $('#of').textContent=`of ${st.cur}${fmt(cap)} · ${n} buy${n===1?'':'s'} · ${st.cur}${fmt(spent)} spent`;
+    const bar=$('#bar'); bar.classList.toggle('over',cap>0&&spent>cap); bar.firstElementChild.style.width=(cap?Math.min(100,spent/cap*100):0)+'%';
+    const t=$('#tally'); t.innerHTML='';
+    if(!n) t.innerHTML='<span class="empty">No marks yet. Every small buy is one mark.</span>';
+    for(let i=0;i<n;i+=5){ const g=document.createElement('span'); const k=Math.min(5,n-i); g.className='group'+(k===5?' full':''); for(let j=0;j<Math.min(4,k);j++){const b=document.createElement('b'); b.style.setProperty('--r',((j*7)%5-2)+'deg'); g.appendChild(b);} t.appendChild(g); }
+    const log=$('#log'); log.innerHTML=''; [...st.log].reverse().forEach((e,ri)=>{const i=st.log.length-1-ri; const d=document.createElement('div'); d.innerHTML=`<span>${new Date(e.t).toLocaleDateString('en-GB',{weekday:'short',hour:'2-digit',minute:'2-digit'})}</span><span>${st.cur}${fmt(e.v)} <button data-i="${i}" aria-label="remove">×</button></span>`; d.querySelector('button').onclick=()=>{st.log.splice(i,1);render()}; log.appendChild(d);});
+    const m=$('#msg');
+    if(!cap) m.textContent='Set a weekly ceiling first. Most people land between 25 and 50. Pick the number you will actually keep, not the one that sounds good.';
+    else if(spent>cap) m.textContent=`Over by ${st.cur}${fmt(spent-cap)}. Not a failure, a signal: the ceiling was too low or the week went sideways. Finish the week, then set the honest number.`;
+    else if(cap&&left/cap<0.2) m.textContent=`${st.cur}${fmt(left)} left. The last stretch is where the week usually breaks. One more and stop, or "not this week".`;
+    else if(n===0) m.textContent='Tap when you buy. The coffee, the snack, the thing at the till. Small enough to forget, big enough to count.';
+    else m.textContent='Still inside the line. The treat is allowed; the leak is what gets counted.';
+    save();
+  }
+  function add(v){ v=parseFloat(v); if(!(v>0)) return; st.log.push({v,t:Date.now()}); render(); }
+  document.querySelectorAll('.chip[data-v]').forEach(b=>b.onclick=()=>add(b.dataset.v));
+  $('#cadd').onclick=()=>{add($('#cv').value);$('#cv').value=''};
+  $('#undo').onclick=()=>{st.log.pop();render()};
+  $('#cur').onclick=()=>{st.cur=st.cur==='£'?'$':st.cur==='$'?'€':'£';render()};
+  ['cap','start'].forEach(id=>{const el=$('#'+id); el.value=st[id]; el.oninput=()=>{st[id]=el.value;render()};});
+  $('#newweek').onclick=()=>{ if(!st.log.length||confirm('Start a new week? This week\'s marks are cleared.')){ st.log=[]; st.start=monday(); $('#start').value=st.start; render(); } };
+  $('#share').onclick=async()=>{const cap=parseFloat(st.cap)||0,spent=st.log.reduce((t,e)=>t+e.v,0); const txt=`Small stuff this week: ${st.log.length} buys, ${st.cur}${fmt(spent)} of a ${st.cur}${fmt(cap)} ceiling. ${spent>cap?'Over by '+st.cur+fmt(spent-cap)+'.':st.cur+fmt(cap-spent)+' left.'} (Paycheck Smarter)`; try{await navigator.clipboard.writeText(txt);$('#share').textContent='Copied ✓'}catch(e){prompt('Copy:',txt)} setTimeout(()=>$('#share').textContent='Copy summary',1400)};
+  render();
+})();
+</script>
+</body>
+</html>

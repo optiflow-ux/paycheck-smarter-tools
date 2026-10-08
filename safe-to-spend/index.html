@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Safe To Spend</title>
+<meta name="description" content="Paycheck Smarter: the one number that matters until your next payday. Money available, minus what still has to leave, divided by the days left.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#17120B;--surface:#241B10;--paper:#F3E9D2;--ink:#17120B;--gold:#C9A227;--gold2:#8A6D1F;--mute:#B9A98A;--green:#6E9B5F;--amber:#D7B04C;--red:#C8553D;--line:rgba(243,233,210,.14)}
+*{box-sizing:border-box;margin:0;padding:0;min-width:0}
+input,select,button{min-width:0;max-width:100%}
+html,body{background:var(--bg);color:var(--paper);font-family:Lora,Georgia,serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;background-image:linear-gradient(rgba(243,233,210,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(243,233,210,.04) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:560px;margin:0 auto;padding:22px 16px 60px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.mono{width:34px;height:34px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:"Playfair Display",serif;color:var(--gold);font-size:14px;flex:none}
+.kicker{font-family:Poppins,sans-serif;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:"Playfair Display",serif;font-weight:400;font-size:28px;line-height:1.15;margin:4px 0 6px}
+.sub{color:var(--mute);font-style:italic;font-size:15px;line-height:1.5}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.card h2{font-family:Poppins,sans-serif;font-weight:600;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.card h2 small{font-weight:400;letter-spacing:0;text-transform:none;color:var(--mute);font-family:Lora,serif;font-style:italic;font-size:12px}
+label{display:block;font-family:Poppins,sans-serif;font-size:12px;color:var(--mute);margin:10px 0 5px}
+input[type=number],input[type=date],input[type=text]{width:100%;background:#1D160D;border:1px solid var(--line);border-radius:10px;color:var(--paper);font:500 18px Poppins,sans-serif;padding:12px 12px;outline:none;-moz-appearance:textfield}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none}
+input:focus{border-color:var(--gold)}
+input::placeholder{color:rgba(185,169,138,.5)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.list .item{display:grid;grid-template-columns:1fr 104px 34px;gap:8px;margin-bottom:8px;align-items:center}
+.list .item input{font-size:15px;padding:10px}
+.x{width:34px;height:42px;border:1px solid var(--line);background:transparent;color:var(--mute);border-radius:10px;font-size:18px;cursor:pointer}
+.add{margin-top:4px;width:100%;background:transparent;border:1px dashed rgba(201,162,39,.5);color:var(--gold);border-radius:10px;padding:10px;font:500 13px Poppins,sans-serif;cursor:pointer}
+.total{display:flex;justify-content:space-between;font-family:Poppins,sans-serif;font-size:13px;color:var(--mute);margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.total b{color:var(--paper);font-weight:500}
+.result{margin-top:16px;border-radius:16px;padding:22px 18px;background:var(--paper);color:var(--ink);position:relative;overflow:hidden}
+.result::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(23,18,11,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(23,18,11,.06) 1px,transparent 1px);background-size:18px 18px;pointer-events:none}
+.result>*{position:relative}
+.result .kicker{color:var(--gold2)}
+.big{font-family:"Playfair Display",serif;font-size:56px;line-height:1;margin:6px 0 2px;letter-spacing:-.01em}
+.big small{font-size:22px;vertical-align:top;margin-right:2px}
+.per{font-family:Poppins,sans-serif;font-size:13px;color:#5E4F3A}
+.pill{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font:600 11px Poppins,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:7px 11px;border-radius:999px;border:1px solid}
+.pill i{width:9px;height:9px;border-radius:50%;background:currentColor;display:inline-block}
+.g{color:#3F6B3A;border-color:#3F6B3A}.a{color:#8A6D1F;border-color:#8A6D1F}.r{color:#A33A2A;border-color:#A33A2A}
+.breakdown{margin-top:14px;display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:14px;color:#3B3127}
+.breakdown b{font-weight:600;color:var(--ink);text-align:right;font-family:Poppins,sans-serif;font-size:13px}
+.move{margin-top:14px;font-size:14px;line-height:1.5;color:#3B3127;border-left:2px solid var(--gold);padding-left:10px;font-style:italic}
+.actions{display:flex;gap:8px;margin-top:14px}
+.btn{flex:1;border-radius:10px;padding:12px;font:600 13px Poppins,sans-serif;letter-spacing:.06em;cursor:pointer;border:1px solid var(--gold);background:var(--gold);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--gold)}
+footer{margin-top:26px;text-align:center;color:var(--mute);font-size:12px;line-height:1.6}
+footer a{color:var(--gold);text-decoration:none;font-family:Poppins,sans-serif;font-weight:500}
+.motto{font-family:"Playfair Display",serif;font-style:italic;color:var(--paper);font-size:15px;margin-bottom:4px}
+@media print{body{background:#fff;color:#000}.card,.result{border:1px solid #999;background:#fff;color:#000}.btn,.add,.x{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mono">PS</div>
+    <div>
+      <div class="kicker">Paycheck Smarter · free tool</div>
+      <h1>Safe To Spend</h1>
+    </div>
+  </header>
+  <p class="sub">Not the balance. The balance lies. This is what is really free until your next payday, and what that means per day.</p>
+
+  <section class="card">
+    <h2>1 · Payday <small>today and the next one</small></h2>
+    <div class="row">
+      <div><label for="avail">Money available now</label><input id="avail" type="number" inputmode="decimal" placeholder="1,284"></div>
+      <div><label for="next">Next payday</label><input id="next" type="date"></div>
+    </div>
+    <label for="hold">Holdback to leave untouched (optional)</label>
+    <input id="hold" type="number" inputmode="decimal" placeholder="0">
+  </section>
+
+  <section class="card list" id="bills">
+    <h2>2 · Bills still to leave <small>only before the next payday</small></h2>
+    <div class="items"></div>
+    <button class="add" data-add="bills">+ add a bill</button>
+    <div class="total"><span>Bills total</span><b data-total="bills">0</b></div>
+  </section>
+
+  <section class="card list" id="ess">
+    <h2>3 · Essentials <small>food, fuel, the floor</small></h2>
+    <div class="items"></div>
+    <button class="add" data-add="ess">+ add an essential</button>
+    <div class="total"><span>Essentials total</span><b data-total="ess">0</b></div>
+  </section>
+
+  <section class="card">
+    <h2>4 · Treat money <small>small, planned, allowed</small></h2>
+    <input id="treat" type="number" inputmode="decimal" placeholder="20">
+  </section>
+
+  <section class="result" id="result">
+    <div class="kicker">Safe to spend</div>
+    <div class="big"><small id="cur">£</small><span id="left">0</span></div>
+    <div class="per" id="per">Fill in the numbers above.</div>
+    <div id="pill"></div>
+    <div class="breakdown" id="bd"></div>
+    <div class="move" id="move" hidden></div>
+    <div class="actions">
+      <button class="btn" id="save">Save on this phone</button>
+      <button class="btn ghost" id="reset">Start a new week</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="motto">Not perfect. Just named.</div>
+    This is step one. The full Paycheck Smarter system, the 15 minute weekly reset and the 8 sheets are at <a href="https://whop.com/paycheck-smarter">whop.com/paycheck-smarter</a>
+  </footer>
+</div>
+<script>
+(function(){
+  const KEY='ps_safe_v1';
+  const $=s=>document.querySelector(s);
+  const state=load()||{avail:'',next:'',hold:'',treat:'',cur:'£',bills:[{n:'',a:''},{n:'',a:''},{n:'',a:''}],ess:[{n:'Food shop',a:''},{n:'Fuel / transport',a:''}]};
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+  function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:2})}
+  function renderList(id){
+    const box=$('#'+id+' .items'); box.innerHTML='';
+    state[id].forEach((it,i)=>{
+      const d=document.createElement('div'); d.className='item';
+      d.innerHTML=`<input type="text" placeholder="${id==='bills'?'Rent, council tax, phone…':'Food, fuel, prescriptions…'}" value="${esc(it.n)}"><input type="number" inputmode="decimal" placeholder="0" value="${it.a}"><button class="x" aria-label="remove">×</button>`;
+      const [n,a,x]=d.children;
+      n.oninput=()=>{it.n=n.value;calc()}; a.oninput=()=>{it.a=a.value;calc()}; x.onclick=()=>{state[id].splice(i,1);renderList(id);calc()};
+      box.appendChild(d);
+    });
+  }
+  function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+  function sum(id){return state[id].reduce((t,i)=>t+(parseFloat(i.a)||0),0)}
+  function days(){ if(!state.next) return null; const d=new Date(state.next+'T12:00:00'); const now=new Date(); now.setHours(12,0,0,0); return Math.max(1,Math.round((d-now)/86400000)); }
+  function calc(){
+    const avail=parseFloat(state.avail)||0, hold=parseFloat(state.hold)||0, treat=parseFloat(state.treat)||0;
+    const b=sum('bills'), e=sum('ess'); const left=avail-hold-b-e-treat; const n=days();
+    $('[data-total=bills]').textContent=state.cur+fmt(b); $('[data-total=ess]').textContent=state.cur+fmt(e);
+    $('#cur').textContent=state.cur; $('#left').textContent=(left<0?'−':'')+fmt(Math.abs(left));
+    const per=$('#per'), pill=$('#pill'), move=$('#move');
+    if(!state.avail){ per.textContent='Fill in the numbers above.'; pill.innerHTML=''; move.hidden=true; $('#bd').innerHTML=''; save(); return; }
+    if(n){ per.textContent = left>0 ? `about ${state.cur}${fmt(left/n)} a day for ${n} day${n>1?'s':''} until payday` : `${n} day${n>1?'s':''} until payday`; }
+    else per.textContent='add your next payday to see the daily number';
+    const ratio = avail>0 ? left/avail : 0;
+    let cls='g', txt='Green · the week holds';
+    if(left<0){cls='r';txt='Red · the week does not fit yet'} else if(ratio<0.08){cls='a';txt='Amber · thin, watch the small stuff'}
+    pill.innerHTML=`<span class="pill ${cls}"><i></i>${txt}</span>`;
+    $('#bd').innerHTML=`<span>Money available</span><b>${state.cur}${fmt(avail)}</b><span>Holdback</span><b>− ${state.cur}${fmt(hold)}</b><span>Bills before payday</span><b>− ${state.cur}${fmt(b)}</b><span>Essentials</span><b>− ${state.cur}${fmt(e)}</b><span>Treat money</span><b>− ${state.cur}${fmt(treat)}</b>`;
+    if(left<0){ const gap=-left; move.hidden=false;
+      move.textContent = treat>=gap ? `Short by ${state.cur}${fmt(gap)}. Treat money covers it: cut treats to ${state.cur}${fmt(treat-gap)} and the week fits.`
+        : `Short by ${state.cur}${fmt(gap)}. Cut treat money first (${state.cur}${fmt(treat)}), then trim the food shop, then move one bill to the other side of payday.`; }
+    else if(ratio<0.08){ move.hidden=false; move.textContent='It fits, barely. Name the one category that absorbs a surprise this week (usually groceries or eating out) before the surprise arrives.'; }
+    else move.hidden=true;
+    save();
+  }
+  ['avail','next','hold','treat'].forEach(id=>{ const el=$('#'+id); el.value=state[id]; el.oninput=()=>{state[id]=el.value;calc()}; });
+  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{state[b.dataset.add].push({n:'',a:''});renderList(b.dataset.add);calc();});
+  $('#cur').onclick=()=>{state.cur=state.cur==='£'?'$':state.cur==='$'?'€':'£';calc()};
+  $('#save').onclick=()=>{save();$('#save').textContent='Saved ✓';setTimeout(()=>$('#save').textContent='Save on this phone',1400)};
+  $('#reset').onclick=()=>{ if(!confirm('Start a new week? Bills and essentials stay, amounts are cleared.')) return; state.avail='';state.hold='';state.treat=''; state.bills.forEach(i=>i.a=''); state.ess.forEach(i=>i.a=''); ['avail','hold','treat'].forEach(id=>$('#'+id).value=''); renderList('bills');renderList('ess');calc(); };
+  renderList('bills'); renderList('ess'); calc();
+})();
+</script>
+</body>
+</html>
