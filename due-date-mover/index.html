@@ -174,7 +174,7 @@ input,select{font-size:16px;padding:11px 12px}
     const t=$('#title'), why=$('#why'), sc=$('#script');
     if(!pays.length || !cands.length){ t.textContent='Add your payday and two or three bills.'; why.textContent=''; sc.hidden=true; save(); return; }
     cands.sort((a,b)=>b.score-a.score || b.b.a-a.b.a); const c=cands[0]; const target = pays.length===1 ? ((pays[0]+2>31)?pays[0]+2-31:pays[0]+2) : (()=>{const p=pays.filter(p=>p<=c.day).pop()||pays[pays.length-1]; return ((p+2)>31?p+2-31:p+2);})();
-    const name=c.b.n||'this bill'; const cur='£';
+    const name=c.b.n||'this bill'; const cur='';
     if(c.since<=3 && c.n===1 && !(food&&Math.abs(c.day-food)<=1)){ t.textContent=`Nothing to move. ${name} already lands right after pay.`; why.textContent='Your dates are already on the calm side of payday. Keep the order, set one reminder for the morning of each payment.'; sc.hidden=true; save(); return; }
     t.textContent=`Move ${name} from the ${ord(c.day)} to the ${ord(target)}.`;
     why.textContent = `It lands ${c.since} day${c.since>1?'s':''} after your last payday${c.n>1?', on the same day as '+(c.n-1)+' other bill'+(c.n>2?'s':''):''}${food&&Math.abs(c.day-food)<=1?', right beside the big food shop':''}. Two days after payday the account is full and the same amount stops hurting. Same bill, same amount, less friction.`;

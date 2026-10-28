@@ -113,8 +113,8 @@ input{width:100%;background:var(--cream2);border:1.5px solid var(--cocoa);border
   <section class="card paper">
     <div class="plaque">
       <div class="kicker">Left this week</div>
-      <div class="left"><small id="cur">£</small><span id="left">0</span></div>
-      <div class="of" id="of">of £0 · 0 buys</div>
+      <div class="left"><small id="cur" title="Tap to switch $ / € / £">$</small><span id="left">0</span></div>
+      <div class="of" id="of">of $0 · 0 buys</div>
       <div class="bar" id="bar"><i></i></div>
     </div>
     <div class="tally" id="tally"><span class="empty">No marks yet. Every small buy is one mark.</span></div>
@@ -134,10 +134,11 @@ input{width:100%;background:var(--cream2);border:1.5px solid var(--cocoa);border
   </footer>
 </div>
 <script>
+const DEF_CUR=(()=>{try{const l=navigator.language||'en-US';if(/-(GB|UK)$/i.test(l))return '£';if(/^(de|fr|it|es|nl|pt|fi|el|sk|sl|et|lv|lt|mt)/i.test(l)||/-(IE|AT|BE|PT|FI)$/i.test(l))return '€';}catch(e){}return '$';})();
 (function(){
   const KEY='ps_tally_v1', $=s=>document.querySelector(s);
   const monday=()=>{const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)};
-  let st=load()||{cap:'',start:monday(),cur:'£',log:[]};
+  let st=load()||{cap:'',start:monday(),cur:DEF_CUR,log:[]};
   function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
   function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-GB',{maximumFractionDigits:2})}
@@ -161,7 +162,7 @@ input{width:100%;background:var(--cream2);border:1.5px solid var(--cocoa);border
   document.querySelectorAll('.chip[data-v]').forEach(b=>b.onclick=()=>add(b.dataset.v));
   $('#cadd').onclick=()=>{add($('#cv').value);$('#cv').value=''};
   $('#undo').onclick=()=>{st.log.pop();render()};
-  $('#cur').onclick=()=>{st.cur=st.cur==='£'?'$':st.cur==='$'?'€':'£';render()};
+  $('#cur').onclick=()=>{st.cur=({'$':'€','€':'£','£':'$'})[st.cur]||'$';render()};
   ['cap','start'].forEach(id=>{const el=$('#'+id); el.value=st[id]; el.oninput=()=>{st[id]=el.value;render()};});
   $('#newweek').onclick=()=>{ if(!st.log.length||confirm('Start a new week? This week\'s marks are cleared.')){ st.log=[]; st.start=monday(); $('#start').value=st.start; render(); } };
   $('#share').onclick=async()=>{const cap=parseFloat(st.cap)||0,spent=st.log.reduce((t,e)=>t+e.v,0); const txt=`Small stuff this week: ${st.log.length} buys, ${st.cur}${fmt(spent)} of a ${st.cur}${fmt(cap)} ceiling. ${spent>cap?'Over by '+st.cur+fmt(spent-cap)+'.':st.cur+fmt(cap-spent)+' left.'} (Paycheck Smarter)`; try{await navigator.clipboard.writeText(txt);$('#share').textContent='Copied ✓'}catch(e){prompt('Copy:',txt)} setTimeout(()=>$('#share').textContent='Copy summary',1400)};

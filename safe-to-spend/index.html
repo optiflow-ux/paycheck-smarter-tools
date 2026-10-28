@@ -114,7 +114,7 @@ footer a{color:var(--gold);text-decoration:none;font-family:Poppins,Arial,sans-s
 
   <section class="result" id="result">
     <div class="kicker">Safe to spend</div>
-    <div class="big"><small id="cur">£</small><span id="left">0</span></div>
+    <div class="big"><small id="cur" title="Tap to switch $ / € / £">$</small><span id="left">0</span></div>
     <div class="per" id="per">Fill in the numbers above.</div>
     <div id="pill"></div>
     <div class="breakdown" id="bd"></div>
@@ -131,10 +131,11 @@ footer a{color:var(--gold);text-decoration:none;font-family:Poppins,Arial,sans-s
   </footer>
 </div>
 <script>
+const DEF_CUR=(()=>{try{const l=navigator.language||'en-US';if(/-(GB|UK)$/i.test(l))return '£';if(/^(de|fr|it|es|nl|pt|fi|el|sk|sl|et|lv|lt|mt)/i.test(l)||/-(IE|AT|BE|PT|FI)$/i.test(l))return '€';}catch(e){}return '$';})();
 (function(){
   const KEY='ps_safe_v1';
   const $=s=>document.querySelector(s);
-  const state=load()||{avail:'',next:'',hold:'',treat:'',cur:'£',bills:[{n:'',a:''},{n:'',a:''},{n:'',a:''}],ess:[{n:'Food shop',a:''},{n:'Fuel / transport',a:''}]};
+  const state=load()||{avail:'',next:'',hold:'',treat:'',cur:DEF_CUR,bills:[{n:'',a:''},{n:'',a:''},{n:'',a:''}],ess:[{n:'Food shop',a:''},{n:'Fuel / transport',a:''}]};
   function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
   function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:2})}
@@ -174,7 +175,7 @@ footer a{color:var(--gold);text-decoration:none;font-family:Poppins,Arial,sans-s
   }
   ['avail','next','hold','treat'].forEach(id=>{ const el=$('#'+id); el.value=state[id]; el.oninput=()=>{state[id]=el.value;calc()}; });
   document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{state[b.dataset.add].push({n:'',a:''});renderList(b.dataset.add);calc();});
-  $('#cur').onclick=()=>{state.cur=state.cur==='£'?'$':state.cur==='$'?'€':'£';calc()};
+  $('#cur').onclick=()=>{state.cur=({'$':'€','€':'£','£':'$'})[state.cur]||'$';calc()};
   $('#save').onclick=()=>{save();$('#save').textContent='Saved ✓';setTimeout(()=>$('#save').textContent='Save on this phone',1400)};
   $('#reset').onclick=()=>{ if(!confirm('Start a new week? Bills and essentials stay, amounts are cleared.')) return; state.avail='';state.hold='';state.treat=''; state.bills.forEach(i=>i.a=''); state.ess.forEach(i=>i.a=''); ['avail','hold','treat'].forEach(id=>$('#'+id).value=''); renderList('bills');renderList('ess');calc(); };
   renderList('bills'); renderList('ess'); calc();

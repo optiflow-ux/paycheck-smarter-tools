@@ -115,7 +115,7 @@ details[open] summary::before{content:"▾ ";}
 
   <section class="result">
     <div class="kicker">Back in your pocket</div>
-    <div class="big"><small id="cur">£</small><span id="year">0</span></div>
+    <div class="big"><small id="cur" title="Tap to switch $ / € / £">$</small><span id="year">0</span></div>
     <div class="per" id="per">a year · tick what you found</div>
     <div class="lines" id="lines"></div>
     <div class="msg" id="msg">Most people find two of the five. Two is enough to notice on payday.</div>
@@ -128,6 +128,7 @@ details[open] summary::before{content:"▾ ";}
   </footer>
 </div>
 <script>
+const DEF_CUR=(()=>{try{const l=navigator.language||'en-US';if(/-(GB|UK)$/i.test(l))return '£';if(/^(de|fr|it|es|nl|pt|fi|el|sk|sl|et|lv|lt|mt)/i.test(l)||/-(IE|AT|BE|PT|FI)$/i.test(l))return '€';}catch(e){}return '$';})();
 (function(){
   const KEY='ps_audit_v1', $=s=>document.querySelector(s);
   const ITEMS={
@@ -142,7 +143,7 @@ details[open] summary::before{content:"▾ ";}
       {id:'sub',t:'A subscription you forgot',s:'Scan the statement for small recurring amounts: the trial that never ended, the app, the second streaming service.',d:8,say:'Cancel in the app store or the account page. If it says “cancel anytime”, that is the moment.'},
       {id:'insur',t:'Insurance or broadband on auto renew',s:'Renewal prices quietly rise. One comparison and one call usually brings it back down.',d:10,say:'“My renewal quote has gone up. I have a quote for [amount] elsewhere. Can you match it, or is there a cheaper equivalent policy?”'}]
   };
-  let st=load()||{cur:'£',v:{}};
+  let st=load()||{cur:DEF_CUR,v:{}};
   function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
   function fmt(n){return (Math.round(n*100)/100).toLocaleString('en-GB',{maximumFractionDigits:2})}
@@ -175,7 +176,7 @@ details[open] summary::before{content:"▾ ";}
     document.querySelectorAll('.box').forEach((b,i)=>{});
     save();
   }
-  $('#cur').onclick=()=>{st.cur=st.cur==='£'?'$':st.cur==='$'?'€':'£';render()};
+  $('#cur').onclick=()=>{st.cur=({'$':'€','€':'£','£':'$'})[st.cur]||'$';render()};
   $('#reset').onclick=()=>{st.v={};render()};
   $('#copy').onclick=async()=>{const found=Object.values(ITEMS).flat().filter(it=>st.v[it.id]&&st.v[it.id].on); const month=found.reduce((t,it)=>t+(parseFloat(st.v[it.id].a)||0),0); const txt=`Bill audit: ${found.length} leaks found, ${st.cur}${fmt(month)} a month, ${st.cur}${fmt(month*12)} a year.\n`+found.map(it=>`• ${it.t}: ${st.cur}${fmt(parseFloat(st.v[it.id].a)||0)}/mo`).join('\n')+`\n(Paycheck Smarter)`; try{await navigator.clipboard.writeText(txt);$('#copy').textContent='Copied ✓'}catch(e){prompt('Copy:',txt)} setTimeout(()=>$('#copy').textContent='Copy my audit',1400)};
   render();
