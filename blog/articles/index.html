@@ -28,7 +28,7 @@
   window.psCookieBanner=function(){
     var old=document.getElementById('ps-cookie'); if(old) old.remove();
     var d=document.createElement('div'); d.id='ps-cookie'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Cookie choice');
-    d.innerHTML='<div class="core"><p>We use a few cookies to see how people read this site, so we can make the guides better. No ads, nothing sold.</p><div class="row"><button type="button" class="yes">Accept</button><button type="button" class="no">No thanks</button></div></div>';
+    d.innerHTML='<div class="core"><p>We use cookies to improve your experience and analyze site traffic. By clicking &quot;Accept&quot;, you consent to our use of cookies.</p><div class="row"><button type="button" class="yes">Accept</button><button type="button" class="no">Decline</button></div></div>';
     document.body.appendChild(d); requestAnimationFrame(function(){requestAnimationFrame(function(){d.classList.add('in')})});
     function close(){d.classList.remove('in'); setTimeout(function(){d.remove()},800);}
     d.querySelector('.yes').onclick=function(){store('yes'); window.psLoadClarity(); close();};
