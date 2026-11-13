@@ -21,13 +21,21 @@
   window.psLoadClarity=function(){ if(loaded) return; loaded=true;
     (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","z58mi12x9h");
     window.clarity('consent');
-    // Google Analytics (proprieta Paycheck Smarter Journal, G-YNT4S4GXK9): stessa regola di consenso di Clarity
+    window.psLoadGA(true); };
+  // Google Analytics (G-YNT4S4GXK9) in Consent Mode v2: senza consenso parte in modalita "denied" (nessun cookie, solo ping anonimi); con consenso passa a "granted"
+  var gaLoaded=false;
+  window.psLoadGA=function(granted){
+    if(gaLoaded){ if(window.gtag) window.gtag('consent','update',{analytics_storage:granted?'granted':'denied'}); return; }
+    gaLoaded=true;
+    window.dataLayer=window.dataLayer||[]; window.gtag=function(){window.dataLayer.push(arguments)};
+    window.gtag('consent','default',{analytics_storage:granted?'granted':'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
     var g=document.createElement('script'); g.async=true; g.src='https://www.googletagmanager.com/gtag/js?id=G-YNT4S4GXK9'; document.head.appendChild(g);
-    window.dataLayer=window.dataLayer||[]; window.gtag=function(){window.dataLayer.push(arguments)}; window.gtag('js',new Date()); window.gtag('config','G-YNT4S4GXK9'); };
+    window.gtag('js',new Date()); window.gtag('config','G-YNT4S4GXK9'); };
   var tz=''; try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
   var needsConsent=/^(Europe|Atlantic\/(Reykjavik|Canary|Madeira|Azores|Faroe))/.test(tz);
   var c=read();
   if(c==='yes' || (c===null && !needsConsent)) window.psLoadClarity();
+  else window.psLoadGA(false);
   window.psCookieBanner=function(){
     var old=document.getElementById('ps-cookie'); if(old) old.remove();
     var d=document.createElement('div'); d.id='ps-cookie'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Cookie choice');
@@ -35,7 +43,7 @@
     document.body.appendChild(d); requestAnimationFrame(function(){requestAnimationFrame(function(){d.classList.add('in')})});
     function close(){d.classList.remove('in'); setTimeout(function(){d.remove()},800);}
     d.querySelector('.yes').onclick=function(){store('yes'); window.psLoadClarity(); close();};
-    d.querySelector('.no').onclick=function(){store('no'); if(window.clarity && loaded){ try{window.clarity('consent',false)}catch(e){} } close();};
+    d.querySelector('.no').onclick=function(){store('no'); if(window.clarity && loaded){ try{window.clarity('consent',false)}catch(e){} } window.psLoadGA(false); close();};
   };
   if(c===null && needsConsent) document.addEventListener('DOMContentLoaded',function(){ setTimeout(window.psCookieBanner,1200); });
 })();
